@@ -1,0 +1,24 @@
+#board-size { display: inline; }
+#new-game { display: inline; }
+
+#game-container{
+  background: grey;
+  border: 1px solid #000;
+  clear: both;
+  width: 400px;
+  height: 400px;
+}
+
+.tile {
+  color: #fff;
+  float: left;
+  background: #000;
+  border: 1px solid #000;
+  width: 15px;
+  height: 15px;
+}
+
+.untouched {
+  background: #fff;
+}
+
