@@ -1,6 +1,13 @@
 var Game = Game || {};
 
-Game.createBoard = function(size) {
+Game.difficulty = 'medium';
+
+Game.createBoard = function() {
+  var size;
+  if (Game.difficulty === 'easy') size = 10;
+  if (Game.difficulty === 'medium') size = 20;
+  if (Game.difficulty === 'hard') size = 30;
+
   $('#game-container').html('');
 
   for (var y=1; y<size+1; y++) {
@@ -10,8 +17,8 @@ Game.createBoard = function(size) {
       $tile.addClass('untouched');
       $tile.attr('id', y + '-' + x);
 
-      var randNum = Math.floor(Math.random()*12);
-      if (randNum % 2 === 0) {
+      var randNum = Math.floor(Math.random()*11);
+      if (randNum % 777 === 0) {
         $tile.addClass('bomb');
       }
 
@@ -20,77 +27,128 @@ Game.createBoard = function(size) {
   }
   var rowSize = (size*17);
   $('#game-container').css({height: rowSize , width: rowSize});
+
+  Game.checkForWin();
 }
 
-Game.toggle = function(tile, options) {
+Game.listeners = function() {
+  $('body').on('click', '.tile', function(e) {
+    Game.toggle($(this), {trigger: true});
+  });
 
-  // game over if tile was clicked on and was a bomb
-  if (options.trigger && $(tile).hasClass('bomb')) {
-    $(tile).removeClass('untouched');
-    alert('game over son!');
+  $('#easy').on('click', function(e) {
+    Game.difficulty = 'easy';
+    Game.createBoard();
+  });
 
-  // check surrounding tiles and toggle them
-  } else if ($(tile).hasClass('untouched')) {
+  $('#medium').on('click', function(e) {
+    Game.difficulty = 'medium';
+    Game.createBoard();
+  });
 
-    $(tile).removeClass('untouched');
+  $('#hard').on('click', function(e) {
+    Game.difficulty = 'hard';
+    Game.createBoard();
+  });
 
-    var id = $(tile).attr('id'),
+  $('#new-game').on('click', function(e) {
+    Game.createBoard();
+  });
+}
 
-        dashIndex = id.indexOf('-'),
-
-        yCoord = parseInt(id.slice(0,dashIndex)),
-        xCoord = parseInt(id.slice(dashIndex+1, id.length+1)),
-
-        $top = $('#' + (yCoord - 1) + '-' + xCoord),
-        $topRight = $('#' + (yCoord - 1) + '-' + (xCoord + 1)),
-        $right = $('#' + yCoord + '-' + (xCoord+1)),
-        $bottomRight = $('#' + (yCoord + 1) + '-' + (xCoord + 1)),
-        $bottom = $('#' + (yCoord + 1) + '-' + xCoord),
-        $bottomLeft = $('#' + (yCoord + 1) + '-' + (xCoord - 1)),
-        $left = $('#' + yCoord + '-' + (xCoord-1)),
-        $topLeft = $('#' + (yCoord - 1) + '-' + (xCoord - 1)),
-
-        surroundingBombs = 0;
-
-    function checkAndToggle(tile, time) {
-      if (tile.hasClass('bomb')) {
-        surroundingBombs += 1;
-      } else {
-        setTimeout(function() {
-          Game.toggle(tile, {trigger: false});
-        }, time);
-      }
-    }
-
-    checkAndToggle($top, 1);
-    checkAndToggle($topRight, 2);
-    checkAndToggle($right, 3);
-    checkAndToggle($bottomRight, 4);
-    checkAndToggle($bottom, 5);
-    checkAndToggle($bottomLeft, 6);
-    checkAndToggle($left, 7);
-    checkAndToggle($topLeft, 8);
-
-    console.log(surroundingBombs);
-    if (surroundingBombs) {
-      $(tile).text(surroundingBombs);
-    }
-
+Game.check = function(tile, time) {
+  if (tile.hasClass('bomb')) {
+    return 1;
+  } else {
+    return 0;
   }
 }
 
+Game.lookForBombs = function(tileArray) {
+  var surroundingBombs = 0;
 
+  for (var i=0, numTiles = tileArray.length; i < numTiles; i++) {
+    surroundingBombs += Game.check(tileArray[i], i);
+  }
+
+  return surroundingBombs;
+}
+
+Game.surroundingTiles = function(tile) {
+  var id = $(tile).attr('id'),
+
+      dashIndex = id.indexOf('-'),
+
+      yCoord = parseInt(id.slice(0,dashIndex)),
+      xCoord = parseInt(id.slice(dashIndex+1, id.length+1)),
+
+      $top =         $('#' + (yCoord - 1) + '-' + xCoord),
+      $topRight =    $('#' + (yCoord - 1) + '-' + (xCoord + 1)),
+      $right =       $('#' + yCoord + '-' + (xCoord+1)),
+      $bottomRight = $('#' + (yCoord + 1) + '-' + (xCoord + 1)),
+      $bottom =      $('#' + (yCoord + 1) + '-' + xCoord),
+      $bottomLeft =  $('#' + (yCoord + 1) + '-' + (xCoord - 1)),
+      $left =        $('#' + yCoord + '-' + (xCoord-1)),
+      $topLeft =     $('#' + (yCoord - 1) + '-' + (xCoord - 1));
+
+  var surroundingTiles = [ $top, $topRight, $right,
+           $bottomRight, $bottom, $bottomLeft, $left, $topLeft ];
+
+  return $.grep(surroundingTiles, function(n) { return n });
+}
+
+Game.toggle = function($tile, options) {
+
+  // game over if tile was clicked on and was a bomb
+  if (options && options.trigger && $tile.hasClass('bomb')) {
+    $tile.removeClass('untouched');
+    $tile.text('*');
+    alert('game over son!');
+
+  // check surrounding tiles
+  } else if ($tile.hasClass('untouched')) {
+
+    $tile.removeClass('untouched');
+
+    var surroundingTiles = Game.surroundingTiles($tile),
+        surroundingBombs = Game.lookForBombs(surroundingTiles);
+
+    setTimeout(function() {
+      if (surroundingBombs) {
+        $tile.text(surroundingBombs);
+      } else {
+        Game.queueToggles(surroundingTiles);
+      }
+    }, 100);
+  }
+}
+
+Game.timeoutToggle = function(tile, time) {
+  setTimeout(function() {
+    Game.toggle(tile);
+  }, time);
+}
+
+Game.queueToggles = function(tileArray) {
+  for (var i=0, numTiles = tileArray.length; i < numTiles; i++) {
+    Game.timeoutToggle(tileArray[i], i*i);
+  }
+}
+
+Game.checkForWin = function() {
+  var checkForWinterval = setInterval(function() {
+    var remainingTiles = $('.untouched').not('.bomb');
+
+    if (remainingTiles.length === 0) {
+      alert('your a winner!');
+      clearInterval(checkForWinterval);
+    }
+  }, 100);
+}
+
+
+//// Game Initalizer
 $(function() {
-  $('#new-game').on('click', function() {
-    var gameSize = $('#board-size-input').val()
-    gameSize = gameSize || 33;
-    console.log(gameSize);
-    Game.createBoard(gameSize);
-  });
-
-  $('body').on('click', '.tile', function() {
-    Game.toggle(this, {trigger: true});
-  });
-
-  Game.createBoard(33);
+  Game.listeners();
+  Game.createBoard();
 });
