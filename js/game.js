@@ -32,8 +32,13 @@ Game.createBoard = function() {
 }
 
 Game.listeners = function() {
-  $('body').on('click', '.tile', function(e) {
-    Game.toggle($(this), {trigger: true});
+  $('body').on('mousedown', '.tile', function(e) {
+    switch (e.which) {
+      case 1:
+        Game.toggle($(this), {trigger: true});
+      case 3:
+        Game.flag($(this));
+    }
   });
 
   $('#easy').on('click', function(e) {
