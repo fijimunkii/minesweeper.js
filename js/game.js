@@ -8,13 +8,13 @@ Game.createBoard = function() {
 
   if (Game.difficulty === 'easy') {
     size = 10;
-    rowSize = (size*16-8);
+    rowSize = (size*16+4);
   } else if (Game.difficulty === 'medium') {
     size = 20;
-    rowSize = (size*16-18);
+    rowSize = (size*16+4);
   } else if (Game.difficulty === 'hard') {
     size = 30;
-    rowSize = (size*16-28);
+    rowSize = (size*16+4);
   }
 
   $('#game-container').html('');
@@ -119,7 +119,7 @@ Game.toggle = function($tile, options) {
   // game over if tile was clicked on and was a bomb
   if (options && options.trigger && $tile.hasClass('bomb')) {
     $tile.removeClass('untouched');
-    $tile.text('*');
+    $tile.addClass('game-over');
     alert('game over son!');
 
   // check surrounding tiles
@@ -132,7 +132,16 @@ Game.toggle = function($tile, options) {
 
     setTimeout(function() {
       if (surroundingBombs) {
-        $tile.text(surroundingBombs);
+        switch (surroundingBombs) {
+          case 1:
+            $tile.addClass('one');
+            break;
+          case 2:
+            $tile.addClass('two');
+            break;
+          case 3:
+            $tile.addClass('three');
+        }
       } else {
         Game.queueToggles(surroundingTiles);
       }

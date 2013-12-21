@@ -1,21 +1,31 @@
-#board-size { display: inline; }
-#new-game { display: inline; }
+table {
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #7B7B7B;
+  border-bottom: 2px solid #7B7B7B;
+  background: #BDBDBD;
+  border-spacing: 7px;
+  border-collapse: separate;
+}
 
 #game-container{
-  background: grey;
-  border: 1px solid #000;
+  background: #BDBDBD;
+  border-top: 2px solid #7B7B7B;
+  border-left: 2px solid #7B7B7B;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
   clear: both;
   width: 400px;
   height: 400px;
 }
 
 .tile {
-  color: #000;
   float: left;
+  width: 16px;
+  height: 16px;
   background: #BDBDBD;
-  border: 1px solid #7B7B7B;
-  width: 15px;
-  height: 15px;
+  border-left: 1px solid #7B7B7B;
+  border-top: 1px solid #7B7B7B;
 }
 
 .untouched {
@@ -25,3 +35,16 @@
   border-bottom: 2px solid #7B7B7B;
 }
 
+.mine { background: url('../img/mine.png'); }
+
+.game-over { background: red url('../img/mine.png'); }
+
+.one { background: url('../img/one.png'); }
+
+.two { background: url('../img/two.png'); }
+
+.three { background: url('../img/three.png'); }
+
+.flag1 { background: url('../img/flag1.png'); }
+
+.flag2 { background: url('../img/flag2.png'); }
