@@ -42,9 +42,12 @@ Game.createBoard = function() {
 }
 
 Game.listeners = function() {
-  $('body').on('mousedown', '.tile', function(e) {
+  $('body').on('mousedown touchstart', '.tile', function(e) {
     var $tile = $(this);
     switch (e.which) {
+      case 0:
+        Game.toggle($tile, {trigger: true});
+        break;
       case 1:
         Game.toggle($tile, {trigger: true});
         break;
@@ -75,7 +78,7 @@ Game.listeners = function() {
 }
 
 Game.stopListening = function() {
-  $('body').off('mousedown', '.tile');
+  $('body').off('mousedown touchstart', '.tile');
 }
 
 Game.check = function(tile, time) {
@@ -208,4 +211,5 @@ Game.checkForWin = function() {
 //// Game Initalizer
 $(function() {
   Game.createBoard();
+  FastClick.attach(document.body);
 });
