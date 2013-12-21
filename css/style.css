@@ -8,6 +8,14 @@ table {
   border-collapse: separate;
 }
 
+#header{
+  background: #BDBDBD;
+  border-top: 2px solid #7B7B7B;
+  border-left: 2px solid #7B7B7B;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
 #game-container{
   background: #BDBDBD;
   border-top: 2px solid #7B7B7B;

@@ -167,11 +167,17 @@ Game.toggle = function($tile, options) {
             break;
           case 3:
             $tile.addClass('three');
+            break;
+          case 4:
+            $tile.addClass('four');
+            break;
+          case 5:
+            $tile.addClass('five');
         }
       } else {
         Game.queueToggles(surroundingTiles);
       }
-    }, 100);
+    }, 25);
   }
 }
 
