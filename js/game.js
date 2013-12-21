@@ -4,9 +4,18 @@ Game.difficulty = 'medium';
 
 Game.createBoard = function() {
   var size;
-  if (Game.difficulty === 'easy') size = 10;
-  if (Game.difficulty === 'medium') size = 20;
-  if (Game.difficulty === 'hard') size = 30;
+  var rowSize;
+
+  if (Game.difficulty === 'easy') {
+    size = 10;
+    rowSize = (size*16-8);
+  } else if (Game.difficulty === 'medium') {
+    size = 20;
+    rowSize = (size*16-18);
+  } else if (Game.difficulty === 'hard') {
+    size = 30;
+    rowSize = (size*16-28);
+  }
 
   $('#game-container').html('');
 
@@ -25,7 +34,7 @@ Game.createBoard = function() {
       $('#game-container').append($tile);
     }
   }
-  var rowSize = (size*17);
+
   $('#game-container').css({height: rowSize , width: rowSize});
 
   Game.checkForWin();
@@ -36,7 +45,10 @@ Game.listeners = function() {
     switch (e.which) {
       case 1:
         Game.toggle($(this), {trigger: true});
+        break;
       case 3:
+        e.preventDefault();
+        alert('you right clicker you!!');
         Game.flag($(this));
     }
   });
