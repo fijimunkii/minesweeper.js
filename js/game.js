@@ -38,18 +38,19 @@ Game.createBoard = function() {
   $('#game-container').css({height: rowSize , width: rowSize});
 
   Game.checkForWin();
+  Game.listeners();
 }
 
 Game.listeners = function() {
   $('body').on('mousedown', '.tile', function(e) {
+    var $tile = $(this);
     switch (e.which) {
       case 1:
-        Game.toggle($(this), {trigger: true});
+        Game.toggle($tile, {trigger: true});
         break;
       case 3:
         e.preventDefault();
-        alert('you right clicker you!!');
-        Game.flag($(this));
+        Game.flag($tile);
     }
   });
 
@@ -73,11 +74,26 @@ Game.listeners = function() {
   });
 }
 
+Game.stopListening = function() {
+  $('body').off('mousedown', '.tile');
+}
+
 Game.check = function(tile, time) {
   if (tile.hasClass('bomb')) {
     return 1;
   } else {
     return 0;
+  }
+}
+
+Game.flag = function($tile) {
+  if ($tile.hasClass('flag1')) {
+    $tile.removeClass('flag1');
+    $tile.addClass('flag2');
+  } else if ($tile.hasClass('flag2')) {
+    $tile.removeClass('flag2');
+  } else {
+    $tile.addClass('flag1');
   }
 }
 
@@ -130,6 +146,7 @@ Game.toggle = function($tile, options) {
     $tile.removeClass('untouched');
     $tile.addClass('game-over');
     Game.uncoverBombs();
+    Game.stopListening();
 
   // check surrounding tiles
   } else if ($tile.hasClass('untouched')) {
@@ -184,6 +201,5 @@ Game.checkForWin = function() {
 
 //// Game Initalizer
 $(function() {
-  Game.listeners();
   Game.createBoard();
 });
