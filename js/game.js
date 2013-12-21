@@ -91,6 +91,15 @@ Game.lookForBombs = function(tileArray) {
   return surroundingBombs;
 }
 
+Game.uncoverBombs = function() {
+  var bombTiles = $('.bomb');
+  for (var i=0, numBombs = bombTiles.length; i < numBombs; i++) {
+    var $bombTile = $(bombTiles[i]);
+    $bombTile.removeClass('untouched');
+    $bombTile.addClass('mine');
+  }
+}
+
 Game.surroundingTiles = function(tile) {
   var id = $(tile).attr('id'),
 
@@ -120,7 +129,7 @@ Game.toggle = function($tile, options) {
   if (options && options.trigger && $tile.hasClass('bomb')) {
     $tile.removeClass('untouched');
     $tile.addClass('game-over');
-    alert('game over son!');
+    Game.uncoverBombs();
 
   // check surrounding tiles
   } else if ($tile.hasClass('untouched')) {
