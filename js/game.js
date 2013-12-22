@@ -39,10 +39,17 @@ Game.createBoard = function() {
 
   Game.checkForWin();
   Game.listeners();
+  Game.depress();
 }
 
 Game.listeners = function() {
-  $('body').on('mousedown touchstart', '.tile', function(e) {
+  $('body').on('mousedown touchend', '.tile', function(e) {
+    var $tile = $(this);
+    Game.press($tile);
+  });
+
+  $('body').on('mouseup touchend', '.tile', function(e) {
+    Game.depress();
     var $tile = $(this);
     switch (e.which) {
       case 0:
@@ -77,8 +84,22 @@ Game.listeners = function() {
   });
 }
 
+Game.press = function(tile) {
+  $('#new-game').text(':o');
+  tile.addClass('pressed');
+}
+
+Game.depress = function() {
+  $('#new-game').text(':)');
+  var $pressedTiles = $('.pressed');
+  for (var i=0, numPressed=$pressedTiles.length; i<numPressed; i++) {
+    $($pressedTiles[i]).removeClass('pressed');
+  }
+}
+
 Game.stopListening = function() {
   $('body').off('mousedown touchstart', '.tile');
+  $('body').off('mouseup touchend', '.tile');
 }
 
 Game.check = function(tile, time) {
@@ -150,6 +171,7 @@ Game.toggle = function($tile, options) {
     $tile.addClass('game-over');
     Game.uncoverBombs();
     Game.stopListening();
+    $('#new-game').text(':(')
 
   // check surrounding tiles
   } else if ($tile.hasClass('untouched')) {
@@ -201,8 +223,9 @@ Game.checkForWin = function() {
     var remainingTiles = $('.untouched').not('.bomb');
 
     if (remainingTiles.length === 0) {
-      alert('your a winner!');
       clearInterval(checkForWinterval);
+      Game.uncoverBombs();
+      Game.stopListening();
     }
   }, 100);
 }

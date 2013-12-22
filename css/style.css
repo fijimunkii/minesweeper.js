@@ -43,6 +43,13 @@ table {
   border-bottom: 2px solid #7B7B7B;
 }
 
+.pressed {
+  border-left: 1px solid #7B7B7B;
+  border-top: 1px solid #7B7B7B;
+  border-right: 0;
+  border-bottom: 0;
+}
+
 .mine { background: url('../img/mine.png'); }
 
 .game-over { background: red url('../img/mine.png'); }
