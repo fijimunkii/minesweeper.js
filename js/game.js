@@ -125,7 +125,7 @@ Game.lookForBombs = function(tileArray) {
   var surroundingBombs = 0;
 
   for (var i=0, numTiles = tileArray.length; i < numTiles; i++) {
-    surroundingBombs += Game.check(tileArray[i], i);
+    surroundingBombs += Game.check(tileArray[i]);
   }
 
   return surroundingBombs;
@@ -202,7 +202,7 @@ Game.toggle = function($tile, options) {
       } else {
         Game.queueToggles(surroundingTiles);
       }
-    }, 25);
+    }, 1);
   }
 }
 
